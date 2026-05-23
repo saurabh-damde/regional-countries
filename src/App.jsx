@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
 import SearchInput from './components/SearchInput';
 import CountryList from './components/CountryList';
@@ -6,6 +6,22 @@ import CountryList from './components/CountryList';
 // Fetch options to restrict fields and keep payload size small
 const USE_REGION_ENDPOINT = false;
 const FIELDS = 'name,flags,capital,population,currencies,languages,region,cca3';
+const REGION = 'europe';
+const REGION_LABELS = {
+  africa: "African",
+  americas: "American",
+  antarctic: "Antarctic",
+  asia: "Asian",
+  europe: "European",
+  oceania: "Oceanian",
+};
+
+const pascalCase = (str = "", del = " ") => {
+  return str
+    .split(del)
+    ?.map((item) => item.charAt(0).toUpperCase() + item.slice(1))
+    .join(del);
+};
 
 export default function App() {
   const [countries, setCountries] = useState([]);
@@ -14,6 +30,7 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isSlowConnection, setIsSlowConnection] = useState(false);
+  const hasFetched = useRef(false);
 
   const fetchCountries = async () => {
     setIsLoading(true);
@@ -29,7 +46,7 @@ export default function App() {
 
     try {
       const url = USE_REGION_ENDPOINT
-        ? `https://restcountries.com/v3.1/region/asia?fields=${FIELDS}`
+        ? `https://restcountries.com/v3.1/region/${REGION}?fields=${FIELDS}`
         : `https://restcountries.com/v3.1/all?fields=${FIELDS}`;
 
       const res = await fetch(url, { signal: controller.signal });
@@ -44,7 +61,7 @@ export default function App() {
         list = Array.isArray(data) ? data : [];
       } else {
         // Filter regional matches locally if using the global endpoint
-        list = data.filter(c => c.region?.toLowerCase() === 'asia');
+        list = data.filter(c => c.region?.toLowerCase() === REGION);
       }
 
       setCountries(list);
@@ -58,10 +75,14 @@ export default function App() {
       clearTimeout(slowTimer);
       clearTimeout(abortTimer);
       setIsLoading(false);
+      hasFetched.current = false;
     }
   };
 
   useEffect(() => {
+    if(hasFetched.current) return;
+
+    hasFetched.current = true;
     fetchCountries();
   }, []);
 
@@ -82,9 +103,9 @@ export default function App() {
   return (
     <div className="app-container" id="countries-directory-app">
       <header className="app-header" id="app-main-header">
-        <h1 className="app-title">Asian Countries Directory</h1>
+        <h1 className="app-title">{REGION_LABELS[REGION]} Countries Directory</h1>
         <p className="app-subtitle">
-          Discover details, demographics, and currencies of nations across Asia. 
+          Discover details, demographics, and currencies of nations across {pascalCase(REGION)}. 
           Use the search bar below to filter results instantly.
         </p>
       </header>
