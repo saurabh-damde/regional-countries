@@ -25,6 +25,7 @@ const pascalCase = (str = "", del = " ") => {
 export default function App() {
   const [countries, setCountries] = useState([]);
   const [region, setRegion] = useState('asia');
+  const [sortOrder, setSortOrder] = useState('asc');
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
@@ -33,6 +34,7 @@ export default function App() {
   const abortControllerRef = useRef(null);
 
   const fetchCountries = async () => {
+    // If a request is already in progress, abort it first
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
     }
@@ -97,7 +99,6 @@ export default function App() {
     fetchCountries();
   }, [region]);
 
-  // Debounce search input by 300ms
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedQuery(searchQuery);
@@ -111,9 +112,14 @@ export default function App() {
     return name.toLowerCase().includes(debouncedQuery.toLowerCase());
   });
 
+  const sortedCountries = [...filteredCountries].sort((a, b) => {
+    const nameA = a.name?.common || '';
+    const nameB = b.name?.common || '';
+    return sortOrder === 'asc' ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA);
+  });
+
   return (
     <div className="app-container" id="countries-directory-app">
-      {/* Top right region switcher bar */}
       <div className="top-bar">
         <div className="region-select-wrapper">
           <label htmlFor="region-select" className="region-select-label">Region:</label>
@@ -129,6 +135,24 @@ export default function App() {
                   {label}
                 </option>
               ))}
+            </select>
+            <svg className="select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </div>
+        </div>
+
+        <div className="region-select-wrapper">
+          <label htmlFor="sort-select" className="region-select-label">Sort:</label>
+          <div className="select-custom-wrapper">
+            <select
+              id="sort-select"
+              className="region-select"
+              value={sortOrder}
+              onChange={(e) => setSortOrder(e.target.value)}
+            >
+              <option value="asc">A to Z</option>
+              <option value="desc">Z to A</option>
             </select>
             <svg className="select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <polyline points="6 9 12 15 18 9"></polyline>
@@ -172,7 +196,7 @@ export default function App() {
             Try Again
           </button>
         </div>
-      ) : filteredCountries.length === 0 ? (
+      ) : sortedCountries.length === 0 ? (
         <div className="empty-wrapper" id="empty-state-view">
           <svg className="empty-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -183,7 +207,7 @@ export default function App() {
           </p>
         </div>
       ) : (
-        <CountryList countries={filteredCountries} />
+        <CountryList countries={sortedCountries} />
       )}
     </div>
   );
