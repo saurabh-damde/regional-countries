@@ -426,6 +426,79 @@ body {
   color: var(--text-muted);
 }
 
+/* Top Bar and Region Dropdown Styling */
+.top-bar {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.region-select-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.region-select-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.select-custom-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.region-select {
+  appearance: none;
+  -webkit-appearance: none;
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 12px;
+  padding: 10px 40px 10px 16px;
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+.region-select:focus {
+  outline: none;
+  border-color: var(--accent-cyan);
+  box-shadow: var(--shadow-glow);
+}
+
+.region-select option {
+  background: hsl(222, 47%, 12%);
+  color: var(--text-primary);
+}
+
+.select-arrow {
+  position: absolute;
+  right: 14px;
+  width: 14px;
+  height: 14px;
+  color: var(--text-muted);
+  pointer-events: none;
+  transition: transform 0.3s ease;
+}
+
+.region-select:focus + .select-arrow {
+  color: var(--accent-cyan);
+  transform: rotate(180deg);
+}
+
 /* Responsive Grid-like Layout Calculations via Pure Flexbox */
 
 /* Desktop viewports above 1024px */
@@ -462,6 +535,11 @@ body {
 @media (max-width: 480px) {
   .app-container {
     padding: 20px 12px;
+  }
+  
+  .top-bar {
+    justify-content: center;
+    margin-bottom: 16px;
   }
   
   .app-header {

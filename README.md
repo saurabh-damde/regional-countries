@@ -2,7 +2,7 @@
 
 A premium, fast, and responsive React single-page application built on top of **Vite** and **Vanilla CSS**. This application integrates with the public **REST Countries API** using dynamic strategies, debounced search inputs, robust data normalization layers, and high-fidelity glassmorphism designs.
 
-🚀 **Live Demo:** [Insert Live Site URL Here]
+🚀 **Live Demo:** [Regional Countries](https://regional-countries.vercel.app/)
 
 ---
 
